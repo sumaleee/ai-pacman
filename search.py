@@ -163,8 +163,54 @@ def iterativeDeepeningSearch(problem):
     was called. To make the autograder happy, do the depth check after the goal test but before calling getActions.
 
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    from util import Stack
+    def limitedDFS(limit):
+        frontier = Stack() #initialize empty frontier and explored set
+        explored = set()
+        startState = problem.getStartState()
+        startNode = Node(startState, None, None, 0)
+        limitReachedDFS = False
+
+        frontier.push((startNode, 0)) # add initial state of problem to frontier
+
+        while True:
+
+            if frontier.isEmpty(): # if frontier is empty
+                return None, limitReachedDFS # return failure
+            
+            node, depth = frontier.pop() # remove node from the frontier
+
+            if problem.goalTest(node.state): # if the node contains a goal state
+                action = []
+                while node.parent is not None: 
+                    action.append(node.action)
+                    node = node.parent
+                action.reverse()
+                return action, True # return corresponding solution
+            
+            if depth >= limit: # once the depth limit is reached
+                limitReachedDFS = True
+                explored.add(node.state)
+                continue
+
+            explored.add(node.state) # add node state to the explored set
+
+            for action in reversed(problem.getActions(node.state)): # for each resulting child from node
+                childState = problem.getResult(node.state, action)
+                if childState not in explored and not any(childState == existingNode.state for (existingNode, existingDepth) in frontier.list):
+                    childNode = Node(childState, node, action, node.path_cost + problem.getCost(node.state, action))
+                    frontier.push((childNode, depth + 1)) # add child to the frontier
+
+    currentLimit = 1
+    while True:
+        result, limitReached = limitedDFS(currentLimit) #limitReached flag to track level of iterative deepening
+        if result is not None:
+            return result
+        
+        if not limitReached:
+            return []
+        currentLimit = currentLimit + 1
+
 
 def aStarSearch(problem, heuristic=nullHeuristic):
     """

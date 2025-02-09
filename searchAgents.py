@@ -291,14 +291,23 @@ class CornersProblem(search.SearchProblem):
         space)
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        if self.startingPosition in self.corners: # check if starting position is in a corner
+            visited = (self.startingPosition,)
+
+        else: # no corners visited
+            visited = ()
+
+        return (self.startingPosition, visited)
+
 
     def goalTest(self, state):
         """
         Returns a boolean; whether this search state is a goal state of the problem.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        _, visitedCorners = state # only store the visited corners
+        return len(visitedCorners) == len(self.corners) # return whether all corners have been visited
+    
 
     def getActions(self, state):
         """
@@ -329,6 +338,24 @@ class CornersProblem(search.SearchProblem):
         #   hitsWall = self.walls[nextx][nexty]
 
         "*** YOUR CODE HERE ***"
+        currentPosition, visitedCorners = state 
+        x, y = currentPosition # turn current position into a vector and compute the next position
+        dx, dy = Actions.directionToVector(action)
+        nextx, nexty = int(x + dx), int(y + dy)
+
+        if self.walls[nextx][nexty]: # if next position is a wall, return the current state
+            return state
+        
+        nextPosition = (nextx, nexty) # update next position
+
+        if nextPosition in self.corners and nextPosition not in visitedCorners: # if next position is a corner that's not yet visited
+            newVisited = visitedCorners + (nextPosition,) # add position to the tuple of visited corners
+            newVisited = tuple(sorted(newVisited)) # sort the tuple
+        else:
+            newVisited = visitedCorners # keep visited corners the same
+
+        return (nextPosition, newVisited)
+
 
     def getCost(self, state, action):
         """Given a state and an action, returns a cost of 1, which is
@@ -371,7 +398,30 @@ def cornersHeuristic(state, problem):
     walls = problem.walls # These are the walls of the maze, as a Grid (game.py)
 
     "*** YOUR CODE HERE ***"
-    return 0 # Default to trivial solution
+    currentPosition, visitedCorners = state
+
+    unvisited = [] # track list of unvisited corners
+    for corner in corners:
+        if corner not in visitedCorners:
+            unvisited.append(corner)
+
+    if not unvisited: # all corners are visited, goal reached
+        return 0
+    
+    heuristic = 0 # initialize the heuristic cost
+    current = currentPosition
+    remaining = list(unvisited) # create list of remaining unvisited corners to use
+
+    while remaining: # while there are still some unvisited corners
+        distances = []
+        for corner in remaining:
+            distance = abs(current[0] - corner[0]) + abs(current[1] - corner[1]) # calculate distance from current position to each remaining corner
+            distances.append(distance)
+        minDistance = min(distances) # find the minimum distance
+        heuristic = heuristic + minDistance # calculate new heuristic
+        index = distances.index(minDistance) # identify corner with the minimum distance
+        current = remaining.pop(index) # update current position to the closest corner, remove it from the list
+    return heuristic
 
 class AStarCornersAgent(SearchAgent):
     "A SearchAgent for FoodSearchProblem using A* and your foodHeuristic"

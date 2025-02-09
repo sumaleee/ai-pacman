@@ -269,9 +269,6 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     return []
 
 
-
-    util.raiseNotDefined()
-
 # Abbreviations
 bfs = breadthFirstSearch
 astar = aStarSearch

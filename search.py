@@ -220,6 +220,56 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     Search the node that has the lowest combined cost and heuristic first.
     """
     "*** YOUR CODE HERE ***"
+    from util import PriorityQueue
+
+
+    explored = set() # initialize empty explored set
+    inFrontier = {} # dictionary to record states in the frontier
+    frontier = PriorityQueue() # initialize empty priority queue
+
+    startState = problem.getStartState()
+    startNode = Node(startState, None, None, 0) # add initial state of problem to frontier w/ priority f(S) = 0 + h(S)
+    startPriority = startNode.path_cost + heuristic(startState, problem)
+    frontier.push((startNode,), startPriority)
+    inFrontier[startState] = startPriority
+
+    while True:
+        if frontier.isEmpty(): # if frontier is empty return failure
+            return []
+
+        nodeTuple = frontier.pop() # choose a node and remove from frontier
+        node = nodeTuple[0]
+
+        if node.state in inFrontier:
+            del inFrontier[node.state]
+
+        if problem.goalTest(node.state): # if the node contains a goal state
+            action = []
+            while node.parent is not None:
+                action.append(node.action)
+                node = node.parent
+            action.reverse()
+            return action # return corresponding solution
+        
+        explored.add(node.state) # add the node state to the explored set
+
+        for action in problem.getActions(node.state): # for each resulting child from node
+            childState = problem.getResult(node.state, action)
+            childCost = node.path_cost + problem.getCost(node.state, action)
+            childNode = Node(childState, node, action, childCost)
+            childPriority = childCost + heuristic(childState, problem)
+
+            if (childState not in explored and childState not in inFrontier):
+                frontier.push((childNode,), childPriority) # add child to frontier
+                inFrontier[childState] = childPriority
+            elif childState in inFrontier and childPriority < inFrontier[childState]: # child is already in the frontier with higher f(n)
+                frontier.update((childNode,), childPriority) # replace frontier node with child
+                inFrontier[childState] = childPriority
+
+    return []
+
+
+
     util.raiseNotDefined()
 
 # Abbreviations

@@ -550,7 +550,49 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
     "*** YOUR CODE HERE ***"
-    return 0
+    foodList = foodGrid.asList()
+
+    if not foodList: # no food left
+        return 0
+    
+    closestFood = float('inf') 
+
+    for food in foodList:
+        distance = abs(position[0] - food[0]) + abs(position[1] - food[1]) # compute distance to closest food
+        if distance < closestFood: # update closest food
+            closestFood = distance
+
+    mstCost = 0 # mst cost for all food dots
+    unvisited = set(foodList) # set of all remaining food
+
+    bestFood = None
+    bestDistance = float('inf')
+    for food in foodList:
+        distance = abs(position[0] - food[0]) + abs(position[1] - food[1]) # compute distance to closest food
+        if distance < bestDistance: # update best food and its distance from pacman
+            bestDistance = distance
+            bestFood = food
+
+    currentFood = bestFood 
+    unvisited.remove(currentFood) 
+    visited = set()
+    visited.add(currentFood)
+
+    while unvisited: # build mst
+        minEdge = float('inf')
+        nextFood = None
+
+        for food in unvisited: # for each unvisited food
+            for v in visited: # check distance to every visited food
+                distance = abs(food[0] - v[0]) + abs(food[1] - v[1])
+                if distance < minEdge: # update new shortest edge and its food
+                    minEdge = distance
+                    nextFood = food
+        mstCost = mstCost + minEdge # add up path cost
+        visited.add(nextFood) 
+        unvisited.remove(nextFood)
+
+    return closestFood + mstCost # heuristic is sum of distance to closest food + mst cost
 
 def mazeDistance(point1, point2, gameState):
     """

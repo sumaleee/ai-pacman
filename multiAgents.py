@@ -278,8 +278,56 @@ def betterEvaluationFunction(currentGameState):
     DESCRIPTION: <write something here so we know what you did>
     """
     "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+def betterEvaluationFunction(currentGameState):
+    """
+      Your extreme, unstoppable evaluation function (question 9).
+    """
+    from util import manhattanDistance
+    "*** YOUR CODE HERE ***"
+    pacmanPos = currentGameState.getPacmanPosition()
+    foodList = currentGameState.getFood().asList()
+    ghostStates = currentGameState.getGhostStates()
+    powerPellet = currentGameState.getCapsules()
+    score = currentGameState.getScore()
+    
+    # reward for being near the closest food, penalize for remaining pellets
+    foodScore = 0
+    if foodList:
+        minFoodDistance = min(manhattanDistance(pacmanPos, food) for food in foodList)
+        foodScore = 10.0 / (minFoodDistance + 1) - 4 * len(foodList)
+    
+    # make pacman move closer to food by penalizing total distance to all food
+    totalFoodScore = 0
+    if foodList:
+        totalDistance = sum(manhattanDistance(pacmanPos, food) for food in foodList)
+        totalFoodScore = -0.1 * totalDistance
+    
+    # reward for eating power pellets
+    ppScore = 0
+    if powerPellet:
+        minPelletDistance = min(manhattanDistance(pacmanPos, pp) for pp in powerPellet)
+        ppScore = 10.0 / (minPelletDistance + 1) - 4 * len(powerPellet)
+    
+    # avoid active ghosts by penalizing for being too close, but approach ghosts if theyre scared
+    ghostScore = 0
+    for ghost in ghostStates:
+        ghostPos = ghost.getPosition()
+        distance = manhattanDistance(pacmanPos, ghostPos)
+        if ghost.scaredTimer > 0:
+            ghostScore += 2.0 / (distance + 1)
+        else:
+            if distance < 2:
+                ghostScore -= 500 
+            else:
+                ghostScore -= 2.0 / distance
+    
+    # penalize moving into states with few legal moves, avoid getting trapped
+    legalActions = currentGameState.getLegalActions(0)
+    trapPenalty = 0
+    if len(legalActions) < 3:
+        trapPenalty = 100
 
+    return score + foodScore + totalFoodScore + ppScore + ghostScore - trapPenalty
 # Abbreviation
 better = betterEvaluationFunction
 

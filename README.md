@@ -10,6 +10,8 @@ I implemented methods in the following files:
 
 `multiAgents.py`: betterEvaluationFunction, minimax, expectimax
 
+For details on how to run each part of the project, please refer to the original instructions below.
+
 ---
 
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/rO4n0vHU)

@@ -1,3 +1,17 @@
+## My Work On This Project
+
+This project was completed as part of my Artificial Intelligence course. The original starter code and instructions were provided by the course instructor.
+
+I implemented methods in the following files:
+
+`search.py`: limitedDFS, aStarSearch
+
+`searchAgents.py`: getStartState, goalTest, getResult, cornersHeuristic, foodHeuristic
+
+`multiAgents.py`: betterEvaluationFunction, minimax, expectimax
+
+---
+
 [![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/rO4n0vHU)
 # Project 2: AI-search
 

@@ -1,6 +1,6 @@
 ## My Work On This Project
 
-This project was completed as part of my Artificial Intelligence course. The original starter code and instructions were provided by the course instructor.
+This project was completed as part of an Artificial Intelligence course. The original starter code and instructions were provided by the course instructor.
 
 I implemented methods in the following files:
 
